@@ -1,9 +1,22 @@
 if (typeof require !== "undefined") {
    var Expression = require("../lib/expression.js");
+   var Param = require("../lib/param.js");
 }
 
 var ok = function(a, msg) { if (!a) throw new Error(msg || "not ok"); };
 var eq = function(a, b) { if (a!==b) throw new Error(a + " !== " + b); };
+
+var throws = function(fn) {
+  var caught;
+  try { fn(); } catch (e) {
+    caught = true;
+  }
+
+  if (!caught) {
+    throw new Error('did not throw as expected');
+  }
+};
+
 
 describe('Expression', function() {
   it('sets up the prototype.constructor', function() {
@@ -42,6 +55,56 @@ describe('Expression', function() {
         });
       });
 
+      it('stringifies parameters (basic)', function() {
+        ['+', '-', '*', '/'].forEach(function(op) {
+          var p = new Param(10);
+          var p2 = new Param(20);
+
+          var str = Expression.createOperation(op, p, p2).toString();
+
+          eq(str, '({10} ' + op + ' {20})');
+        });
+      });
+    });
+
+    describe('#evaluate', function() {
+      it('evaluates constants', function() {
+        [['+', 30], ['-', -10], ['*', 200], ['/', .5]].forEach(function(op) {
+          var v = Expression.createOperation(
+            op[0],
+            Expression.createConstant(10),
+            Expression.createConstant(20)
+          ).evaluate();
+
+          eq(v, op[1]);
+        });
+      });
+
+      it('resolves parameters', function() {
+        [['+', 30], ['-', -10], ['*', 200], ['/', .5]].forEach(function(op) {
+          var p = new Param(20);
+
+          var v = Expression.createOperation(
+            op[0],
+            Expression.createConstant(10),
+            Expression.createParameter(p)
+          ).evaluate();
+
+          eq(v, op[1]);
+        });
+      });
+
+      it('throws on invalid operator', function() {
+        var e =  Expression.createOperation(
+          'blah',
+          Expression.createConstant(10),
+          Expression.createConstant(20)
+        );
+
+        throws(function() {
+          e.evaluate();
+        });
+      });
     });
   });
 
