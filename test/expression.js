@@ -152,6 +152,139 @@ describe('Expression', function() {
           ok(e3.independentOf(Param(5)));
         });
       });
+
+      it('throws when an invalid operator is used', function() {
+        var e = Expression.createParameter(Param(0));
+        e.op = "monkey";
+
+        throws(function() {
+          e.independentOf(Param(5));
+        })
+      });
+    });
+
+    describe('#partial', function() {
+      it('creates a partial derivative (param)', function() {
+        var p = Param(10);
+        var e = Expression.createParameter(p);
+
+        // dependent var
+        var r1 = e.partial(p);
+        eq(r1.value, 1);
+        eq(r1.op, 'constant');
+        eq(r1.e0, null);
+        eq(r1.e1, null);
+
+        // independent var
+        var r2 = e.partial(Param(10));
+        eq(r2.value, 0);
+        eq(r2.op, 'constant');
+        eq(r2.e0, null);
+        eq(r2.e1, null);
+      });
+
+      it('creates a partial derivative (constant)', function() {
+        var p = Param(10);
+        var e = Expression.createConstant(10);
+
+        eq(e.partial().value, 0);
+        eq(e.partial(Param(10)).value, 0);
+      });
+
+      it('creates a partial derivative (+)', function() {
+        var p = Param(10);
+        var e = Expression.createOperation('+',
+          Expression.createParameter(p),
+          Expression.createParameter(Param(10))
+        );
+
+        eq(e.partial(p).toString(), '(1 + 0)');
+        eq(e.partial(Param(5)).toString(), '(0 + 0)');
+      });
+
+      it('creates a partial derivative (-)', function() {
+        var p = Param(10);
+        var e = Expression.createOperation('-',
+          Expression.createParameter(p),
+          Expression.createParameter(Param(10))
+        );
+
+        eq(e.partial(p).toString(), '(1 - 0)');
+        eq(e.partial(Param(5)).toString(), '(0 - 0)');
+      });
+
+      it('creates a partial derivative (*)', function() {
+        var p = Param(10);
+        var e = Expression.createOperation('*',
+          Expression.createParameter(p),
+          Expression.createParameter(Param(5))
+        );
+
+        eq(e.partial(p).toString(), '(({10} * 0) + ({5} * 1))');
+        eq(e.partial(Param(5)).toString(), '(({10} * 0) + ({5} * 0))');
+      });
+
+      it('creates a partial derivative (/)', function() {
+        var p = Param(10);
+        var e = Expression.createOperation('/',
+          Expression.createParameter(p),
+          Expression.createParameter(Param(5))
+        );
+
+        eq(e.partial(p).toString(), '((({5} * 1) - ({10} * 0)) / square({5}))');
+        eq(e.partial(Param(5)).toString(), '((({5} * 0) - ({10} * 0)) / square({5}))');
+      });
+
+      it('creates a partial derivative (negate)', function() {
+        var p = Param(10);
+        var e = Expression.createOperation('negate',
+          Expression.createParameter(p)
+        );
+
+        eq(e.partial(Param(10)).toString(), '-(0)');
+        eq(e.partial(p).toString(), '-(1)');
+      });
+
+      it('creates a partial derivative (sqrt)', function() {
+        var p = Param(10);
+        var e = Expression.createOperation('sqrt',
+          Expression.createParameter(p)
+        );
+
+        eq(e.partial(Param(10)).toString(), '((0.5 / sqrt({10})) * 0)');
+        eq(e.partial(p).toString(), '((0.5 / sqrt({10})) * 1)');
+      });
+
+      it('creates a partial derivative (square)', function() {
+        var p = Param(10);
+        var e = Expression.createOperation('square',
+          Expression.createParameter(p)
+        );
+
+        eq(e.partial(Param(10)).toString(), '((2 * {10}) * 0)');
+        eq(e.partial(p).toString(), '((2 * {10}) * 1)');
+      });
+
+      it('creates a partial derivative (sin)', function() {
+        var p = Param(10);
+        var e = Expression.createOperation('sin',
+          Expression.createParameter(p)
+        );
+
+        eq(e.partial(Param(10)).toString(), '(cos({10}) * 0)');
+        eq(e.partial(p).toString(), '(cos({10}) * 1)');
+      });
+
+      it('creates a partial derivative (cos)', function() {
+        var p = Param(10);
+        var e = Expression.createOperation('cos',
+          Expression.createParameter(p)
+        );
+
+        eq(e.partial(Param(10)).toString(), '-((sin({10}) * 0))');
+        eq(e.partial(p).toString(), '-((sin({10}) * 1))');
+      });
+
     });
   });
 
