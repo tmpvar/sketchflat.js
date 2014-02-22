@@ -106,6 +106,53 @@ describe('Expression', function() {
         });
       });
     });
+
+    describe('#independentOf', function() {
+
+      it('returns true if this param is not the incoming', function() {
+        var e = Expression.createParameter(Param(10));
+        ok(e.independentOf(Param(50)));
+      });
+
+      it('returns false if this param is the incoming', function() {
+        var p = Param(10);
+        var e = Expression.createParameter(p);
+        ok(!e.independentOf(p));
+      });
+
+      it('returns true if constant', function() {
+        var e = Expression.createConstant(10);
+        ok(e.independentOf(Param(10)));
+      });
+
+      it('recurses for nested expressions (basic)', function() {
+
+        ['+', '-', '*', '/'].forEach(function(op) {
+          var p1 = Param(5);
+          var p2 = Param(10);
+          var e1 = Expression.createParameter(p1)
+          var e2 = Expression.createParameter(p2)
+
+          var e3 = Expression.createOperation(op, e1, e2);
+
+          ok(!e3.independentOf(p1))
+          ok(!e3.independentOf(p2));
+          ok(e3.independentOf(Param(5)));
+        });
+      });
+
+      it('recurses for nested expressions (fn)', function() {
+
+        ['sqrt', 'square', 'negate', 'sin', 'cos'].forEach(function(op) {
+          var p1 = Param(5);
+          var e1 = Expression.createParameter(p1)
+          var e3 = Expression.createOperation(op, e1);
+
+          ok(!e3.independentOf(p1))
+          ok(e3.independentOf(Param(5)));
+        });
+      });
+    });
   });
 
   describe('Expression Methods', function() {
