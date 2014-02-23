@@ -482,6 +482,49 @@ describe('Expression', function() {
         eq(r[1], p2);
       });
     });
+
+    describe('#mark', function() {
+
+      it('increments the "mark" on a parameter', function() {
+        var p = Param(10);
+        var e = Expression.createParameter(p);
+
+        var r = e.mark(10);
+        eq(p.mark, 10);
+        eq(r, e);
+      });
+
+      it('walks down e0 and e1', function() {
+
+        var calls = 0;
+        var track = function() {
+          calls++;
+        };
+
+        var e = Expression.createOperation('+',
+          { mark: track },
+          { mark: track }
+        );
+
+        e.mark(5);
+
+        eq(calls, 2);
+      });
+
+      it('applies delta to the whole expression tree', function() {
+        var p = Param();
+        var p2 = Param();
+
+        var e = Expression.createOperation('+',
+          Expression.createParameter(p),
+          Expression.createParameter(p2)
+        );
+
+        e.mark(10);
+        eq(p.mark, 10);
+        eq(p2.mark, 10);
+      });
+    });
   });
 
   describe('Expression Methods', function() {
