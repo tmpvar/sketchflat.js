@@ -84,6 +84,42 @@ describe('Constraint', function() {
         eq(e.evaluate(), 10);
       });
     });
+
+    describe('Constraint.createEqualLength', function() {
+      it('creates a length expression', function() {
+        var e = Constraint.createEqualLength(
+          { start: Vec2(0, 0), end: Vec2(0, 10) },
+          { start: Vec2(10, 0), end: Vec2(10, 10) }
+        );
+
+        eq(e.toString(),
+          '(sqrt((square(({0} - {0})) + square(({0} - {10})))) - sqrt((square(({10} - {10})) + square(({0} - {10})))))'
+        );
+
+      });
+    });
+
+    describe('Constraint.createVertical', function() {
+      it('creates a vertical expression', function() {
+        var e = Constraint.createVertical({
+          start: Vec2(0, 0),
+          end: Vec2(10, 0)
+        });
+
+        eq(e.toString(), '({0} - {10})');
+
+      });
+    });
+
+    describe('Constraint.createHorizontal', function() {
+      it('creates a horizontal expression', function() {
+        var e = Constraint.createHorizontal({
+          start: Vec2(0, 0),
+          end: Vec2(0, 10)
+        });
+        eq(e.toString(), '({0} - {10})');
+      });
+    });
   });
 });
 
