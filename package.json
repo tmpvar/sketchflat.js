@@ -21,5 +21,8 @@
     "test": "node_modules/mocha/bin/mocha test/test.js -R spec",
     "cover": "istanbul cover _mocha -- test/test.js -R spec",
     "minify": "browserify -e .js | uglifyjs > .min.js"
+  },
+  "dependencies": {
+    "vec2": "~1.5.0"
   }
 }
