@@ -446,6 +446,44 @@ describe('Expression', function() {
         });
       });
     });
+
+    describe('#marksTwoParamsEqual', function() {
+      it('returns false if the operator is "-"', function() {
+        eq(Expression.createOperation('-',
+          Expression.createConstant(4),
+          Expression.createConstant(2)
+        ).marksTwoParamsEqual(), false);
+      });
+
+      it('returns false if e0.op is not a parameter', function() {
+        eq(Expression.createOperation('*',
+          Expression.createOperation('*', null, null),
+          Expression.createConstant(2)
+        ).marksTwoParamsEqual(), false);
+      });
+
+      it('returns false if e1.op is not a parameter', function() {
+        eq(Expression.createOperation('*',
+          Expression.createConstant(2),
+          Expression.createOperation('*', null, null)
+        ).marksTwoParamsEqual(), false);
+      });
+
+      it('returns an array when e0 and e1 expressions are parameters', function() {
+        var p = Param();
+        var p2 = Param();
+        var r = Expression.createOperation('*',
+          Expression.createParameter(p),
+          Expression.createParameter(p2)
+        ).marksTwoParamsEqual();
+
+        eq(r.length, 2);
+        eq(r[0], p);
+        eq(r[1], p2);
+      });
+
+
+    });
   });
 
   describe('Expression Methods', function() {
