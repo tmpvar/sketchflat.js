@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "description": "",
   "keywords": [],
-  "main": ".js",
+  "main": "sketchflat.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/tmpvar/sketchflat.js.git"
   },
   "author": "Elijah Insua <tmpvar@gmail.com>",
-  "license": "MIT",
+  "license": "GPLv3",
   "bugs": {
     "url": "https://github.com/tmpvar/sketchflat.js/issues"
   },

@@ -1,8 +1,8 @@
 ## sketchflat.js
 
-
+This is a javascript port of the constraint solver found in Jonathan Westhues' sketchflat
 
 
 ### license
 
-MIT (see: [license.txt](blob/master/license.txt))
+GPLv3 (see: [license.txt](blob/master/license.txt))

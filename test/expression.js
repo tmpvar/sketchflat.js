@@ -481,8 +481,6 @@ describe('Expression', function() {
         eq(r[0], p);
         eq(r[1], p2);
       });
-
-
     });
   });
 
