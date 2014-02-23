@@ -7,8 +7,20 @@ var eq = function(a, b) { if (a!==b) throw new Error(a + " !== " + b); };
 
 describe('Param', function() {
   describe('constructor', function() {
-    it('', function() {
+    it('sets value', function() {
+      var p = Param(10);
+      eq(p.value(), 10);
+      eq(p.known,  true);
+    });
 
+    it('leaves known if no value', function() {
+      var p = Param();
+      eq(p.known, false);
+    });
+
+    it('sets the id of this param', function() {
+      var p = Param();
+      ok(p.id > 0);
     });
   });
 
@@ -25,9 +37,14 @@ describe('Param', function() {
   });
 
   describe('#toString', function() {
-    it('stringifies', function() {
+    it('stringifies (known)', function() {
       eq(Param(10).toString(), '{10}');
     });
+
+    it('stringifies (unknown)', function() {
+      var p = Param();
+      eq(p.toString(), '{#' + p.id + '}');
+    })
   });
 
 });
