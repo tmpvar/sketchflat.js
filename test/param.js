@@ -47,4 +47,16 @@ describe('Param', function() {
     })
   });
 
+  describe('#fromObject', function() {
+    it('rewrites .value', function() {
+      var obj = { x : 10 };
+      var p = Param.fromObject(obj, 'x');
+
+      eq(p.value(), 10);
+      obj.x = 100;
+      eq(p.value(), 100);
+
+    });
+  });
+
 });
