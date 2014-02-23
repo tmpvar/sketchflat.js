@@ -337,7 +337,114 @@ describe('Expression', function() {
           eq(e.clone().replaceParameter(Param(2), p2).toString(), op + '({10})');
         });
       });
+    });
 
+    describe('#evaluateKnown', function() {
+
+      it('resolves known params to constants', function() {
+        var e = Expression.createParameter(Param(10)).evaluateKnown();
+
+        eq(e.op, 'constant');
+      });
+
+      it('resolves unknown params to an expression', function() {
+        var e = Expression.createParameter(Param()).evaluateKnown();
+        eq(e.op, 'parameter');
+      });
+
+      it('resolves constants to expressions', function() {
+        var e = Expression.createConstant(10).evaluateKnown();
+        eq(e.value, 10);
+      });
+
+      it('reduces constant expressions (+, -, *, /)', function() {
+        [['+', 30], ['-', -10], ['*', 200], ['/', 0.5]].forEach(function(op) {
+
+          var e = Expression.createOperation(op[0],
+            Expression.createConstant(10),
+            Expression.createConstant(20)
+          );
+
+          eq(e.evaluateKnown().value, op[1]);
+        });
+      });
+
+      it('returns constant(0) if one side of * is 0', function() {
+        var p = Param();
+        var e = Expression.createOperation('*',
+          Expression.createConstant(0),
+          Expression.createParameter(p)
+        );
+
+        eq(e.evaluateKnown().toString(), '0');
+      });
+
+      it('reduces parametric expressions (+, -, *, /)', function() {
+        [
+          ['+', '(30 + (20 + ?))'],
+          ['-', '(10 + (20 - ?))'],
+          ['*', '(200 + (20 * ?))'],
+          ['/', '(2 + (20 / ?))']
+        ].forEach(function(op) {
+
+          var param = Param();
+          var e = Expression.createOperation('+',
+            Expression.createOperation(op[0],
+              Expression.createConstant(20),
+              Expression.createConstant(10)
+            ),
+            Expression.createOperation(op[0],
+              Expression.createConstant(20),
+              Expression.createParameter(param)
+            )
+          );
+
+          eq(e.evaluateKnown().toString(), op[1].replace('?', '{#' + param.id + '}'));
+        });
+      });
+
+      it('reduces constant expressions (sqrt, square, negate, sin, cos)', function() {
+
+        [
+          ['sqrt', 3.1622776601683795],
+          ['square', 100],
+          ['negate', -10],
+          ['cos', -0.8390715290764524],
+          ['sin', -0.5440211108893698],
+        ].forEach(function(op) {
+
+          var e = Expression.createOperation(op[0],
+            Expression.createConstant(10)
+          );
+
+          eq(e.evaluateKnown().value, op[1]);
+        });
+      });
+
+      it('reduces parametric expressions (sqrt, square, negate, sin, cos)', function() {
+
+        [
+          ['sqrt', 'sqrt((30 * ?))'],
+          ['square', 'square((30 * ?))'],
+          ['negate', '-((30 * ?))'],
+          ['cos', 'cos((30 * ?))'],
+          ['sin', 'sin((30 * ?))']
+        ].forEach(function(op) {
+
+          var param = Param();
+          var e = Expression.createOperation(op[0],
+            Expression.createOperation('*',
+              Expression.createOperation('+',
+                Expression.createConstant(20),
+                Expression.createConstant(10)
+              ),
+              Expression.createParameter(param)
+            )
+          );
+
+          eq(e.evaluateKnown().toString(), op[1].replace('?', '{#' + param.id + '}'));
+        });
+      });
     });
   });
 
