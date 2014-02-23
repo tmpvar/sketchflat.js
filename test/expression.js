@@ -159,7 +159,7 @@ describe('Expression', function() {
 
         throws(function() {
           e.independentOf(Param(5));
-        })
+        });
       });
     });
 
@@ -283,6 +283,59 @@ describe('Expression', function() {
 
         eq(e.partial(Param(10)).toString(), '-((sin({10}) * 0))');
         eq(e.partial(p).toString(), '-((sin({10}) * 1))');
+      });
+    });
+
+    describe('#replaceParameter', function() {
+      it('chains', function() {
+        var e = Expression.createConstant(10);
+        eq(e.replaceParameter(Param(5)), e);
+      });
+
+      it('ignores constants', function() {
+        var e = Expression.createConstant(10);
+        eq(e.replaceParameter(Param(5)).value, 10);
+      })
+
+      it('replaces a parameter with another', function() {
+        var p = Param(10);
+        var e = Expression.createParameter(p);
+        eq(e.replaceParameter(Param(5), p).param.value(), 5);
+      });
+
+      it('replaces a parameter with another (+,-,*,/)', function() {
+        var p = Param(10);
+        var p2 = Param(5);
+        ['+', '-', '*', '/'].forEach(function(op) {
+
+          var e0 = Expression.createParameter(p);
+          var e1 = Expression.createParameter(p2);
+
+          var e = Expression.createOperation(op, e0, e1);
+
+          eq(e.clone().replaceParameter(Param(2), p).toString(), '({2} ' + op + ' {5})');
+          eq(e.clone().replaceParameter(Param(2), p2).toString(), '({10} ' + op + ' {2})');
+
+          eq(e.clone().replaceParameter(Param(2), null).toString(), '({10} ' + op + ' {5})');
+        });
+      });
+
+      it('replaces a parameter with another (fns)', function() {
+        var p = Param(10);
+        var p2 = Param(5);
+        ['sqrt', 'square', 'negate', 'sin', 'cos'].forEach(function(op) {
+
+
+          var e0 = Expression.createParameter(p);
+          var e = Expression.createOperation(op, e0);
+
+          if (op === 'negate') {
+            op = '-';
+          }
+
+          eq(e.clone().replaceParameter(Param(2), p).toString(), op + '({2})');
+          eq(e.clone().replaceParameter(Param(2), p2).toString(), op + '({10})');
+        });
       });
 
     });
