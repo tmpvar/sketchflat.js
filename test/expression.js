@@ -564,5 +564,13 @@ describe('Expression', function() {
         eq(b, e.e1);
       });
     });
+
+    describe('#reset', function() {
+      it('resets the subsystem', function() {
+        var a = Expression.createConstant(10);
+        a.reset();
+        eq(a.subsystem, -1);
+      });
+    });
   });
 });
