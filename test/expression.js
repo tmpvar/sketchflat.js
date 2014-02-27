@@ -524,6 +524,39 @@ describe('Expression', function() {
         eq(p.mark, 10);
         eq(p2.mark, 10);
       });
+
+      it('sets mark to 0 if 0 is passed', function() {
+        var p = Param();
+        var p2 = Param();
+
+        var e = Expression.createOperation('+',
+          Expression.createParameter(p),
+          Expression.createParameter(p2)
+        );
+
+        e.mark(10);
+        eq(p.mark, 10);
+        eq(p2.mark, 10);
+
+        e.mark(0);
+        eq(p.mark, 0);
+        eq(p2.mark, 0);
+      });
+
+      it('adds the incoming delta to the existing value', function() {
+        var p = Param();
+
+        var e = Expression.createOperation('+',
+          Expression.createParameter(p),
+          Expression.createConstant(5)
+        );
+
+        e.mark(10);
+        eq(p.mark, 10);
+
+        e.mark(10);
+        eq(p.mark, 20);
+      });
     });
   });
 
