@@ -56,11 +56,24 @@ describe('Sketch', function() {
       eq(s.constraints.length, 0);
     });
 
-
-
     it('chains', function() {
       var s = Sketch();
       eq(s.removeConstraint(), s);
     });
   });
+
+  describe('#solve', function() {
+    it('runs this.solver.solve()', function() {
+      var s = new Sketch();
+      var calls = 0;
+      s.solver.solve = function() {
+        calls++;
+      };
+
+      s.solve();
+
+      eq(calls, 1);
+    });
+  });
+
 });
