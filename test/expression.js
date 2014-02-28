@@ -619,6 +619,33 @@ describe('Expression', function() {
 
         eq(e.countUnknowns(), 1);
       });
+
+      it('takes a mark parameter to include only marked params (none marked)', function() {
+
+        var p = Param();
+
+        var e = Expression.createOperation('+',
+          Expression.createParameter(p),
+          Expression.createConstant(5)
+        );
+
+
+        eq(e.countUnknowns(true), 0);
+      });
+
+      it('takes a mark parameter to include only marked params (one marked)', function() {
+
+        var p = Param();
+
+        var e = Expression.createOperation('+',
+          Expression.createParameter(p),
+          Expression.createConstant(5)
+        );
+
+        e.unknown().mark(1);
+
+        eq(e.countUnknowns(true), 1);
+      });
     });
   });
 });
