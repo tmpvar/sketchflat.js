@@ -448,8 +448,8 @@ describe('Expression', function() {
     });
 
     describe('#marksTwoParamsEqual', function() {
-      it('returns false if the operator is "-"', function() {
-        eq(Expression.createOperation('-',
+      it('returns true if the operator is "-"', function() {
+        eq(Expression.createOperation('*',
           Expression.createConstant(4),
           Expression.createConstant(2)
         ).marksTwoParamsEqual(), false);
@@ -472,7 +472,7 @@ describe('Expression', function() {
       it('returns an array when e0 and e1 expressions are parameters', function() {
         var p = Param();
         var p2 = Param();
-        var r = Expression.createOperation('*',
+        var r = Expression.createOperation('-',
           Expression.createParameter(p),
           Expression.createParameter(p2)
         ).marksTwoParamsEqual();
