@@ -605,5 +605,20 @@ describe('Expression', function() {
         eq(a.subsystem, -1);
       });
     });
+
+    describe('#countUnknowns', function() {
+      it('counts the number of unsolved variables', function() {
+
+        var p = Param();
+
+        var e = Expression.createOperation('+',
+          Expression.createParameter(p),
+          Expression.createConstant(5)
+        );
+
+
+        eq(e.countUnknowns(), 1);
+      });
+    });
   });
 });
