@@ -106,7 +106,54 @@ describe('Solver', function() {
   });
 
   describe('#solveSubsystem', function() {
-    it('', function() {
+    it('returns false if there are more equations than unknowns', function() {
+      var e = Expression.createOperation('-',
+        Expression.createConstant(5),
+        Expression.createConstant(2)
+      );
+
+      var e2 = Expression.createOperation('-',
+        Expression.createConstant(5),
+        Expression.createConstant(Param())
+      );
+
+      var solver = new Solver();
+
+      ok(!solver.solveSubsystem([e, e2]));
+    });
+
+    it('returns false if there are no unknowns', function() {
+      var e = Expression.createOperation('-',
+        Expression.createConstant(5),
+        Expression.createConstant(5)
+      );
+
+      var solver = new Solver();
+
+      ok(!solver.solveSubsystem([e]));
+    });
+
+
+    it('solves a really basic situation', function() {
+
+      var p = Param(1);
+      var p2 = Param(2);
+
+      p2.reference = true;
+
+      var e = Expression.createOperation('-',
+        Expression.createConstant(1),
+        Expression.createParameter(p2)
+      ).unknown();
+
+      var e2 = Expression.createOperation('*',
+        Expression.createParameter(p2),
+        Expression.createConstant(5)
+      ).unknown();
+
+      var solver = new Solver();
+      var r = solver.solveSubsystem([e, e2]);
+      console.log(r);
 
     });
   });
