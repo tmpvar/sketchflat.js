@@ -48,14 +48,38 @@ describe('Param', function() {
   });
 
   describe('#fromObject', function() {
-    it('rewrites .value', function() {
+    it('rewrites .value and reads from property', function() {
       var obj = { x : 10 };
       var p = Param.fromObject(obj, 'x');
 
       eq(p.value(), 10);
       obj.x = 100;
       eq(p.value(), 100);
+    });
 
+    it('rewrites .value and reads from function', function() {
+      var obj = { x : function() { return 10; } };
+      var p = Param.fromObject(obj, 'x');
+
+      eq(p.value(), 10);
+    });
+
+    it('forwards the incoming value (prop)', function() {
+      var obj = { x : 10 };
+      var p = Param.fromObject(obj, 'x');
+
+      eq(p.value(), 10);
+      p.value(100);
+      eq(obj.x, 100);
+    });
+
+    it('forwards the incoming value (prop)', function() {
+      var obj = { x : 10 };
+      var p = Param.fromObject(obj, 'x');
+
+      eq(p.value(), 10);
+      p.value(100);
+      eq(obj.x, 100);
     });
   });
 
