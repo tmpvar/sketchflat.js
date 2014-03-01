@@ -647,5 +647,22 @@ describe('Expression', function() {
         eq(e.countUnknowns(true), 1);
       });
     });
+
+    describe('#collectUnknowns', function() {
+      it('returns an array of Params', function() {
+        var p = Param();
+
+        var e = Expression.createOperation('+',
+          Expression.createParameter(p),
+          Expression.createConstant(5)
+        );
+
+        e.unknown().mark(1);
+        var unknowns = e.collectUnknowns(true);
+
+        eq(unknowns.length, 1);
+        eq(unknowns[0], p);
+      });
+    });
   });
 });
